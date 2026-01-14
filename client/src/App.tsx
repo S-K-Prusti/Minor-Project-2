@@ -1,5 +1,4 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Pricing from "./pages/Pricing";
@@ -10,9 +9,15 @@ import Community from "./pages/Community";
 import View from "./pages/View";
 
 const App = () => {
+
+  const {pathname} = useLocation()
+
+  const hideNavbar =pathname.startsWith('/projects/') && pathname !== '/projects/' || pathname.startsWith('/view/')|| pathname.startsWith('/preview/')
   return (
     <div>
-      <Navbar/>
+      {!hideNavbar && <Navbar/>}
+
+      {/* so by writing the above code from 11-18 in project view page we hid the navbar which is same for all the page  */}
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/pricing" element={<Pricing />} />
