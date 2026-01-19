@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Project } from '../types'
 import {
@@ -14,7 +14,9 @@ import {
   TabletIcon,
   XIcon
 } from 'lucide-react'
-import { dummyConversations, dummyProjects } from '../assets/assets'
+import { dummyConversations, dummyProjects, dummyVersion } from '../assets/assets'
+import Sidebar from '../components/Sidebar'
+import ProjectPreview, { type ProjectPreviewRef } from '../components/ProjectPreview'
 
 const Projects = () => {
   const { projectId } = useParams()
@@ -30,11 +32,13 @@ const Projects = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
+  const previeRef = useRef<ProjectPreviewRef>(null)
+
   const fetchProject = async () => {
     const project = dummyProjects.find(project => project.id === projectId)
     setTimeout(() => {
       if (project) {
-        setProject({ ...project, conversation: dummyConversations })
+        setProject({ ...project, conversation: dummyConversations, versions:dummyVersion });
         setLoading(false)
         setIsGenerating(project.current_code ? false : true)
       }
@@ -47,8 +51,26 @@ const Projects = () => {
       setIsSaving(false)
     }, 1000)
   }
+  
+  // download code {index.html}
+  const downloadCode = () => {
+    const code = previeRef.current?.getCode() || project?.current_code;
+    if(!code){
+      if(isGenerating){
+        return
+      }
+      return
+    }
+    const element = document.createElement('a');
+    const file = new Blob([code], {type: "text/html"});
+    element.href= URL.createObjectURL(file)
+    element.download = "index.html";
+    document.body.appendChild(element)
+    element.click();
 
-  const downloadCode = () => {}
+    
+
+  }
 
   const togglePublish = async () => {}
 
@@ -163,8 +185,11 @@ const Projects = () => {
         </div>
       </div>
       <div className="flex-1 flex overflow-auto">
-        <div>Sidebar</div>
-        <div className="flex-1 p-2 pl-0">project Preview</div>
+        <Sidebar isMenuOpen={isMenuOpen} project={project} setProject={(p)=>setProject(p)} isGenerating={isGenerating} setIsGenerating={setIsGenerating} />
+
+        <div className="flex-1 p-2 pl-0">
+          <ProjectPreview ref={previeRef} project={project} isGenerating={isGenerating} device={device}/>
+        </div>
       </div>
     </div>
   ) : (

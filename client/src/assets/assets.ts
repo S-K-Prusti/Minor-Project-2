@@ -155,7 +155,7 @@ export const dummyVersion = [
      id: 'zyx',
      code: '',
      description: 'code updated',
-     timestamp: '2025-11-14 10:51:14.997',
+     timestamp: '2025-11-14T10:23:43.837Z',
      projectId: '6cd61d42-04e3-433f-9fcc-aba884e4115f'
     }
 ]
